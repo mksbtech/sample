@@ -1,35 +1,37 @@
 package com.milan.cloud.function.person;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.context.annotation.RequestScope;
 
+import com.milan.api.exception.BusinessException;
 import com.milan.cloud.function.vo.PersonVO;
 import com.milan.cloud.function.vo.Result;
+import com.milan.cloud.service.PersonService;
+import com.milan.entities.Person;
 
 @SpringBootApplication
+@Configuration
 @ComponentScan(value = { "com.milan.cloud" })
+@EntityScan(basePackages = "com.milan.entities")
+@EnableAutoConfiguration
+@EnableJpaRepositories("com.milan.repository")
 public class PersonFunction {
 	
 	@Autowired
-	private RestTemplate restTemplate;
+	private PersonService personService;
 	
-	private final String BASE_PERSON_URI = "http://localhost:8080/person/";
 	public static void main(String [] args) {
 		SpringApplication.run(PersonFunction.class, args);
 	}
@@ -43,15 +45,35 @@ public class PersonFunction {
 	@Bean(name="persons")
 	@RequestScope
 	public Function<String, List<PersonVO>> getAllPersons() throws IOException{		
-		HttpEntity entity = new HttpEntity(getHttpHeaders());
-		ResponseEntity<List<PersonVO>> respEntity = (ResponseEntity<List<PersonVO>>) getRestTemplate().exchange(BASE_PERSON_URI+"findAllPerson", HttpMethod.GET, entity, new ArrayList<PersonVO>().getClass());
-		System.out.println(respEntity.getHeaders());
-		Function<String, List<PersonVO>> functionResult= null;		
-			final List<PersonVO> result = respEntity.getBody();
-			functionResult= (v)-> {
-				return result;
-				};
-				return functionResult;
+		
+		return (v)->{
+			return personService.findAllPerson();
+		};
+	}
+	
+	/**
+	 * Post endpoint with url /person-function/personByLastName
+	 * Content Type of the request should be text/plain
+	 * @return
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@Bean(name="personByLastName")
+	@RequestScope
+	public Function<String, List<Person>> getPersonWithLastName() throws IOException{		
+		
+		return (v)->{
+			List<Person> personList=null;;
+			try {
+				personList = personService.findByLastName(v);
+			} catch (BusinessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return personList;
+			}
+			return personList;
+			
+		};
 	}
 	
 	/**
@@ -66,11 +88,8 @@ public class PersonFunction {
 			if(null ==personVO || personVO.getFirstName()==null || personVO.getLastName()==null) {
 				return "Invalid input";}
 			
-			HttpEntity<PersonVO> entity = new HttpEntity<PersonVO>(personVO, getHttpHeaders());
-			
-			ResponseEntity<Result> respEntity = (ResponseEntity<Result>) getRestTemplate().exchange(BASE_PERSON_URI+"person", HttpMethod.POST, entity, Result.class);
-				final Result result = respEntity.getBody();				
-					return result.getMessage();
+			Result result = personService.createPerson(personVO);
+			return result.getMessage();
 		};		
 	}
 	
@@ -86,11 +105,15 @@ public class PersonFunction {
 			if(null ==personVO || personVO.getFirstName()==null || personVO.getLastName()==null) {
 				return "Invalid input";}
 			
-			HttpEntity<PersonVO> entity = new HttpEntity<PersonVO>(personVO, getHttpHeaders());
-			
-			ResponseEntity<Result> respEntity = (ResponseEntity<Result>) getRestTemplate().exchange(BASE_PERSON_URI+"person", HttpMethod.PUT, entity, Result.class);
-				final Result result = respEntity.getBody();				
-					return result.getMessage();
+			Result result=null;
+			try {
+				result = personService.updatePerson(personVO);
+			} catch (BusinessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return "failure";
+			}
+			return result.getMessage();
 		};		
 	}
 	/**
@@ -99,31 +122,23 @@ public class PersonFunction {
 	 * @return
 	 */
 	@Bean(name="deletePerson")
-	public Function<PersonVO,String> deletePerson(){
+	public Function<PersonVO,String> deletePerson() throws BusinessException{
 
 		return personVO -> {
 			if(null ==personVO || personVO.getFirstName()==null || personVO.getLastName()==null) {
 				return "Invalid input";}
 			
-			HttpEntity<PersonVO> entity = new HttpEntity<PersonVO>(personVO, getHttpHeaders());
+			Result result=null;
+			try {
+				result = personService.deletePerson(personVO);
+				
+			} catch (BusinessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return "failure";
+			}
+			return result.getMessage();
 			
-			ResponseEntity<Result> respEntity = (ResponseEntity<Result>) getRestTemplate().exchange(BASE_PERSON_URI+"person", HttpMethod.DELETE, entity, Result.class);
-				final Result result = respEntity.getBody();				
-					return result.getMessage();
 		};		
-	}
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
-	
-	protected HttpHeaders getHttpHeaders()
-	{
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.setContentType(MediaType.APPLICATION_JSON);		
-		return headers;
-	}
+	}	
 }
