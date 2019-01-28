@@ -1,0 +1,165 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Employee Service
+  description: A sample restful application generated using OpenApiGenerator(https://github.com/OpenAPITools/openapi-generator) and its Gradle plugin (https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-gradle-plugin/README.adoc)
+  license: 
+    name: MIT
+servers:
+  - url: http://localhost:8081/employee-service
+paths:
+  /employees: 
+    get:
+      summary: List all employees
+      operationId: listEmployees
+      tags:
+        - employees
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: An paged array employees
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Employees"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create an employee
+      operationId: createEmployee
+      requestBody: 
+        content: 
+          application/json:    
+              schema:
+                $ref: "#/components/schemas/Employee"
+      tags:
+        - employees
+      responses:
+        201:
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Update an employee
+      operationId: updateEmployee      
+      requestBody: 
+        content: 
+          application/json:    
+              schema:
+                $ref: "#/components/schemas/Employee"
+      tags:
+        - employees
+      responses:
+        201:
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"    
+  /employees/{employeeId}: 
+    get:
+      summary: Info for a specific employee
+      operationId: showEmployeetById
+      tags:
+        - employees
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          description: The id of the employee to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      summary: Delete specific employee
+      operationId: deleteEmployeetById
+      tags:
+        - employees
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          description: The id of the employee to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error" 
+            
+components:
+  schemas:
+    Employee: 
+      type: object
+      required:
+        - id
+        - firstName
+        - middleName
+        - lastName
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string    
+    Employees:
+      type: array
+      items:
+        $ref: "#/components/schemas/Employee"
+    Error: 
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
