@@ -1,0 +1,17 @@
+<p>post works!</p>
+<ng-container [formGroup]="this.myFormGroup">
+    <table>
+        <tr><input type="text" formControlName="title"></tr>
+    <tr><input type="text" formControlName="text"></tr>
+    <tr><input type="text" formControlName="category"></tr>
+    <tr><input type="text" formControlName="author"></tr>
+    <tr><button type="submit" (click)="onSubmit()">Submit</button>
+    </tr>
+    <tr><a href="/">Back</a>
+    </tr>
+   </table>
+    <!-- <ng-container formGroupName="subgroupName">
+        <input type="text" formControlName="subfield2">
+    </ng-container>
+    <input type="text" formControlName="myRequiredField"> -->
+</ng-container>
