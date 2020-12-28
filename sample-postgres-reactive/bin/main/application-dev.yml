@@ -1,0 +1,32 @@
+server:
+  port: 8081
+  servlet: 
+    contextPath: /employee-service
+  http2: 
+    enabled: true  
+spring:   
+  profiles:
+  application: 
+    name: employee-service
+  r2dbc: 
+    url: r2dbc:postgresql://localhost:5432/poc_db?schema=reactive_poc
+    username: myuser
+    password: start123  
+management: 
+  security: 
+    enabled: false
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: /employee-service/health
+      exposure:
+        include: refresh, health
+    
+logging:
+  level:
+    root: INFO    
+    org: 
+      springframework: 
+        web: INFO
+    

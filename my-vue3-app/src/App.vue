@@ -3,7 +3,9 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> |
     <router-link to="/cars">Cars</router-link> |
-    <router-link to="/strapi-content">Strapi Content</router-link>
+    <router-link to="/strapi-content">Strapi Content</router-link>|
+    <router-link to="/employees">Employees</router-link> | 
+    <router-link to="/reactive-employees">Reactive-Employees</router-link>
   </div>
   <router-view/>
 </template>
