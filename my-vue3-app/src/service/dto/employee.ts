@@ -1,6 +1,6 @@
 export class Employee {
     // id: string;
-    private firstName: string;
+    firstName: string;
     
     lastName: string;
     email: string;

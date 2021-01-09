@@ -15,6 +15,7 @@ app.use(store)
 app.use(router)
 app.use(PrimeVue)
 app.use(VueRx)
+
 app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Button', Button);

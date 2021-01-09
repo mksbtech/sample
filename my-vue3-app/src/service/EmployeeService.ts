@@ -33,6 +33,16 @@ export default class EmployeeService {
 		return Axios.get<any>(this.url);
 	}
 
+	public createEmployee(employee: Employee): Observable<any>{
+		// const requestOptions = {
+        //     method: "GET",
+        //     headers: { "Accept": "application/json" }
+        //   };
+		Axios.defaults.headers.common['Accept']="application/json";
+		Axios.defaults.headers.common['Content-Type']="application/json";
+		return Axios.post<any>(this.url,employee);
+	}
+
 
 	
 

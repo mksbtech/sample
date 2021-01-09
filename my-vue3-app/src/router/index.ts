@@ -47,6 +47,22 @@ const routes: Array<RouteRecordRaw> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/ReactiveEmployee.vue')
+  },
+  {
+    path: '/add-employee',
+    name: 'AddEmployee',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/AddEmployee.vue')
+  },
+  {
+    path: '/add-employee-primevue',
+    name: 'AddEmployee-PrimeVue',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/AddEmployee-PrimeVue.vue')
   }
 ]
 

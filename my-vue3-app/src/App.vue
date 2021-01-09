@@ -5,7 +5,9 @@
     <router-link to="/cars">Cars</router-link> |
     <router-link to="/strapi-content">Strapi Content</router-link>|
     <router-link to="/employees">Employees</router-link> | 
-    <router-link to="/reactive-employees">Reactive-Employees</router-link>
+    <router-link to="/reactive-employees">Reactive-Employees</router-link> | 
+    <router-link to="/add-employee">Add-Employee</router-link> |
+    <router-link to="/add-employee-primevue">Add-Employee-Primevue</router-link>   
   </div>
   <router-view/>
 </template>
