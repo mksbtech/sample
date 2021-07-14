@@ -39,7 +39,6 @@ management:
 logging:
   level:
     root: INFO
-    com.mastercard.dxp.es: INFO
     org.springframework.web: INFO
     
 poolSize:
